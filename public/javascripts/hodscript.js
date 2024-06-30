@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const professors = Array.from(professorsInputs).map(
         (input) => input.value
       );
-
+      const program=row.querySelector("td:nth-child(9)").textContent;
       if (confirm("Are you sure you want to save")) {
         fetch("/save-course", {
           method: "POST",
@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            program:program,
             courseName: courseName,
             sharingType: sharingType,
             professors: professors,
