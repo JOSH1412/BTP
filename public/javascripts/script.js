@@ -2,7 +2,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const courses = [];
     const courseForm = document.getElementById("courseForm");
     const courseTableBody = document.querySelector("#courseTable tbody");
-
+    const DeadLine=document.getElementById("deadLineButton");
+    document.getElementById('deadLineButton').onclick = function() {
+        const deadLineDate = document.getElementById('courseDateInput').value;
+        console.log(deadLineDate);
+        
+        fetch('/save-deadline', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `deadLineDate=${encodeURIComponent(deadLineDate)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Deadline date saved successfully');
+          } else {
+            console.error('Failed to save deadline date');
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      }
     // Load saved data when the page loads
     const savedData = localStorage.getItem("savedCourses");
     if (savedData) {
@@ -29,10 +50,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 savedCourses.forEach(course => {
                     // Handle course ID
                     course.id = course.courseCode; // Adjust the property name as per your actual data structure
-
+                    
                     // Handle department
                     course.department = course.department.name; // Assuming 'name' is the property that holds the department's name
-
+                    course.program=course.program || "B.Tech.";
                     // Handle number of students
                     course.cseStudents = course.numberOfStudents.CSE; // Adjust the property name as per your actual data structure
                     course.cceStudents = course.numberOfStudents.CCE; // Adjust the property name as per your actual data structure
@@ -40,7 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     course.eceStudents = course.numberOfStudents.ECE; // Adjust the property name as per your actual data structure
                     course.eceDDStudents = course.numberOfStudents.ECE_DD; // Adjust the property name as per your actual data structure
                     course.cseDDStudents = course.numberOfStudents.CSE_DD; // Adjust the property name as per your actual data structure
-
+                    course.mscPHYStudents=course.numberOfStudents.MScPHY || 0;
+                    course.mscMTHStudents = course.numberOfStudents.MScMTH|| 0;
                     // Handle course type
                     course.courseType = course.courseType || ''; // Ensure courseType is not undefined
                     course.sharingType = course.sharingType || ''; // Ensure sharingType is not undefined
@@ -72,16 +94,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${course.name}</td>
                 <td>${course.id}</td>
                 <td>${course.department}</td>
+                <td>${course.program}</td>
                 <td>${course.cseStudents}</td>
                 <td>${course.cceStudents}</td>
                 <td>${course.eceStudents}</td>
                 <td>${course.cseDDStudents}</td>
                 <td>${course.eceDDStudents}</td>
                 <td>${course.mmeStudents}</td>
+                <td>${course.mscPHYStudents}</td>
+                <td>${course.mscMTHStudents}</td>
                 <td>${course.credits}</td>
                 <td>${course.semester}</td>
                 <td>${course.courseType}</td>
-                <td>${course.groupInput}</td> <!-- Add this line -->
+                <td>${course.groupInput}</td> 
                 <td>${course.sharingType}</td>
                 <td>${course.year}</td>
                 <td>${course.professors.join(", ")}</td>
@@ -130,7 +155,34 @@ document.addEventListener("DOMContentLoaded", function () {
     addEventListeners();
        
         
-        
+    document.getElementById("sendButton").addEventListener("click", function () {
+        if (courses.length === 0) {
+            alert("No courses to send.");
+            return;
+        }
+
+        fetch("/sendAllCourses", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(courses)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("All courses sent successfully:", data);
+                alert("All courses sent and emails sent successfully.");
+            })
+            .catch(error => {
+                console.error("Error sending all courses:", error);
+                alert("Error occurred while sending all courses. Please try again.");
+            });
+    });
      
 
     function saveCourse(index) {
@@ -215,11 +267,14 @@ document.addEventListener("DOMContentLoaded", function () {
             <td><input type="text" id="editNameInput" value="${course.name}"></td>
             <td><input type="text" id="editCodeInput" value="${course.id}"></td>
             <td><input type="text" id="editDepartmentInput" value="${course.department}"></td>
+            <td><input type="text" id="editProgramInput" value="${course.program}"></td>
             <td><input type="text" id="editCseStudentsInput" value="${course.cseStudents}"></td>
             <td><input type="text" id="editCceStudentsInput" value="${course.cceStudents}"></td>
             <td><input type="text" id="editEceStudentsInput" value="${course.eceStudents}"></td>
             <td><input type="text" id="editCseDDStudentsInput" value="${course.cseDDStudents}"></td>
             <td><input type="text" id="editEceDDStudentsInput" value="${course.eceDDStudents}"></td>
+            <td><input type="text" id="editMScPHYStudentsInput" value="${course.mscPHYStudents}"></td>
+            <td><input type="text" id="editMScMTHStudentsInput" value="${course.mscMTHStudents}"></td>
             <td><input type="text" id="editMmeStudentsInput" value="${course.mmeStudents}"></td>
             <td><input type="text" id="editCreditsInput" value="${course.credits}"></td>
             <td><input type="text" id="editSemesterInput" value="${course.semester}"></td>
@@ -253,12 +308,15 @@ document.addEventListener("DOMContentLoaded", function () {
             name: row.querySelector("#editNameInput").value,
             id: row.querySelector("#editCodeInput").value,
             department: row.querySelector("#editDepartmentInput").value,
+            program: row.querySelector("#editProgramInput").value,
             cseStudents: row.querySelector("#editCseStudentsInput").value,
             cceStudents: row.querySelector("#editCceStudentsInput").value,
             eceStudents: row.querySelector("#editEceStudentsInput").value,
             cseDDStudents: row.querySelector("#editCseDDStudentsInput").value,
             eceDDStudents: row.querySelector("#editEceDDStudentsInput").value,
             mmeStudents: row.querySelector("#editMmeStudentsInput").value,
+            mscPHYStudens:row.querySelector("#editMScPHYStudentsInput").value,
+            mscMTHStudens:row.querySelector("#editMScMTHStudentsInput").value,
             credits: row.querySelector("#editCreditsInput").value,
             semester: row.querySelector("#editSemesterInput").value,
             courseType: row.querySelector("#editCourseTypeInput").value,
@@ -350,12 +408,15 @@ document.addEventListener("DOMContentLoaded", function () {
             name: document.getElementById("courseNameInput").value,
             id: document.getElementById("courseCodeInput").value,
             department: document.getElementById("departmentSelect").value,
+            program:document.getElementById("ProgramSelect").value,
             cseStudents: document.getElementById("cseStudentsInput").value,
             cceStudents: document.getElementById("cceStudentsInput").value,
             eceStudents: document.getElementById("eceStudentsInput").value,
             cseDDStudents: document.getElementById("cseDDStudentsInput").value,
             eceDDStudents: document.getElementById("eceDDStudentsInput").value,
             mmeStudents: document.getElementById("mmeStudentsInput").value,
+            mscPHYStudents: document.getElementById("mscPHYStudentsInput").value,
+            mscMTHStudents: document.getElementById("mscMTHStudentsInput").value,
             credits: document.getElementById("creditsInput").value,
             semester: document.getElementById("semesterSelect").value,
             courseType: document.getElementById("courseTypeSelect").value,
@@ -401,11 +462,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Redirect the user to the /timetable route
         window.location.href = '/timetable';
     });
-
-    // Optional: Add event listener for logout button
-    // document.querySelector("form[action='/logout']").addEventListener("submit", function() {
-    //     // Logout logic goes here
-    // });
 
     // Call fetchAndRenderSavedCourses to render saved courses
     fetchAndRenderSavedCourses();

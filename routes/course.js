@@ -3,10 +3,11 @@ const Schema = mongoose.Schema;
 
 // Define the course schema
 const courseSchema = new Schema({
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
   year: { type: String, required: true },
   semester: { type: String },
   courseCode: { type: String, default: "null" },
+  program:{ type: String, default: "B.Tech." },
   numberOfStudents: {
     CSE: { type: Number, default: 0 },
     CCE: { type: Number, default: 0 },
@@ -14,6 +15,8 @@ const courseSchema = new Schema({
     CSE_DD: { type: Number, default: 0 },
     ECE_DD: { type: Number, default: 0 },
     MME: { type: Number, default: 0 },
+    MScPHY:{type:Number,default:0},
+    MScMTH:{type:Number,default:0}
   },
   department: { type: Schema.Types.ObjectId, ref: "Department" },
   courseType: { type: String },

@@ -36,6 +36,17 @@
               <option value="MTH">MTH</option>
               <option value="PHY">PHY</option>  
             </select>
+            <select id="ProgramSelect">
+              <option value="">Select Program</option>
+              <option value="B.Tech.">B.Tech.</option>
+              <option value="B.Tech.(Hons.)">B.Tech.(Hons.)</option>
+              <option value="Minors">Minors</option>
+              <option value="B.Tech.-M.Tech.(5-year Integrated DD)">B.Tech.-M.Tech.(5-year Integrated DD)</option>
+              <option value="M.Tech.">M.Tech.</option>
+              <option value="M.S.">M.S.</option>
+              <option value="M.Sc.">M.Sc.</option>
+              <option value="Ph.D.">Ph.D.</option>    
+            </select>
             <input type="number" id="cseStudentsInput" name="numberOfStudents.CSE" placeholder="No. of CSE students">
             <input type="number" id="cceStudentsInput" name="numberOfStudents.CCE" placeholder="No. of CCE students">
             <input type="number" id="eceStudentsInput" name="numberOfStudents.ECE" placeholder="No. of ECE students">
@@ -44,6 +55,10 @@
             <input type="number" id="eceDDStudentsInput" name="numberOfStudents.ECE_DD"
               placeholder="No. of ECE DD students">
             <input type="number" id="mmeStudentsInput" name="numberOfStudents.MME" placeholder="No. of MME students">
+            <input type="number" id="mscPHYStudentsInput" name="numberOfStudents.MScPHY" placeholder="No. of MScPHY students">
+            <input type="number" id="mscMTHStudentsInput" name="numberOfStudents.MScMTH" placeholder="No. of MScMTH students">
+
+
             <input type="number" id="creditsInput" name="credits"placeholder="Credits">
             <select id="semesterSelect">
               <option value="">Select Semester</option>
@@ -54,7 +69,12 @@
               <option value="">Select Course Type</option>
               <option value="Institute Core">Institute Core</option>
               <option value="Program Core">Program Core</option>
-              <option value="Program Elective">Program Elective</option>
+              <option value="Basic Science Course">Basic Science Course</option>
+              <option value="Engineering Science Course">Engineering Science Course</option>
+              <option value="Mandatory Course">Mandatory Course</option>
+              <option value="Humanitites And Social Science And Management Course">Humanitites And Social Science And Management Course</option>
+              <option value="Program Elective">Program Specific Elective</option>
+              <option value="Open Elective">Open Elective</option>
               <option value="Other Elective">Other Elective</option>
             </select>
             <div id="groupInputContainer" style="display: none;">
@@ -81,12 +101,15 @@
                 <th>Course Name</th>
                 <th>Course ID</th>
                 <th>Department</th>
+                <th>Program</th>
                 <th>No. of CSE Students</th>
                 <th>No. of CCE Students</th>
                 <th>No. of ECE Students</th>
                 <th>No. of CSE DD Students</th>
                 <th>No. of ECE DD Students</th>
                 <th>No. of MME Students</th>
+                <th>No. of MSc PHY Students</th>
+                <th>No. of MSc MTH Students</th>
                 <th>Credits</th>
                 <th>Semester</th>
                 <th>Course Type</th>
@@ -101,6 +124,8 @@
               <!-- Course entries will be inserted here dynamically -->
             </tbody>
           </table>
+          <input type="date" id="courseDateInput" name="courseDate" placeholder="Course Date">
+          <button type="submit" id="deadLineButton">Save DeadLine</button>
           <button id="sendButton">Send</button>
           <button id="generateButton" >Generate</button>
 
